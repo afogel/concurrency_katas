@@ -16,7 +16,7 @@ class ConcurrentLogger < Logger
   def set_formatter
     proc do |severity, time, progname, msg|
       thread_id = Thread.current.native_thread_id
-      "#{severity} #{time.strftime(datetime_format)} [#{Process.pid} - #{thread_id}]: #{msg}\n"
+      "#{severity} #{time.strftime(datetime_format)} [#{thread_id}]: #{msg}\n"
     end
   end
 
@@ -32,4 +32,8 @@ logger.debug("I shouldn't see this message at all")
 logger.add(Logger::ERROR, 'this is a serious error')
 logger.level = Logger::DEBUG
 logger.debug("But I should see this one I should see")
+logger.level = Logger::WARN
 
+4.times.map do
+  Thread.new { 50.times {|i| logger.warn("I maked this many widgets: #{i}")}}
+end.each(&:join)
