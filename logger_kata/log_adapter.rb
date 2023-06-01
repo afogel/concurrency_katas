@@ -2,10 +2,11 @@ require 'logger'
 require 'debug'
 
 class ConcurrentLogger < Logger
-  def initialize(output_channel:)
+  def initialize(level = Logger::WARN, output_channel:)
     @output_channel = output_channel
     super(output_channel)
     self.formatter = set_formatter
+    self.level = level
   end
 
   private
@@ -27,6 +28,8 @@ end
 
 
 logger = ConcurrentLogger.new(output_channel: $stdout)
-logger.add(Logger::WARN, 'add')
-puts 'Hi mom'
+logger.debug("I shouldn't see this message at all")
+logger.add(Logger::ERROR, 'this is a serious error')
+logger.level = Logger::DEBUG
+logger.debug("But I should see this one I should see")
 
