@@ -14,7 +14,8 @@ class ConcurrentLogger < Logger
 
   def set_formatter
     proc do |severity, time, progname, msg|
-      "#{severity} #{time.strftime(datetime_format)}: "
+      thread_id = Thread.current.native_thread_id
+      "#{severity} #{time.strftime(datetime_format)} [#{Process.pid} - #{thread_id}]: #{msg}\n"
     end
   end
 
